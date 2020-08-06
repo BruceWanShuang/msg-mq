@@ -1,7 +1,10 @@
 package com.msg.mq.rocketmq.producer;
 
+import java.util.List;
 import java.util.Map;
 
+import com.alibaba.rocketmq.client.producer.MessageQueueSelector;
+import com.alibaba.rocketmq.common.message.MessageQueue;
 import com.msg.mq.common.bean.BaseMqMessageDto;
 import com.msg.mq.rocketmq.bean.RocketMqProducerResult;
 import com.msg.mq.rocketmq.exception.RocketMqException;
@@ -66,6 +69,40 @@ public class RocketMqSendMsgProcessor {
             defaultMQProducer.sendOneway(sendMsg);
         } catch (Exception e) {
             logger.error(String.format("sendOneway消息发送失败,Message:%s", sendMsg.toString()), e);
+        }
+    }
+
+
+
+    /**
+     * 发送顺序消息,仅发送一次，不关心是否发送成功,暂未开发启用
+     *
+     * @param topic 主题
+     * @param tag 消息标签，只支持设置一个Tag（服务端消息过滤使用）
+     * @param keys 消息关键词，多个Key用MessageConst.KEY_SEPARATOR隔开（查询消息使用）
+     * @param puId 唯一标识符，如订单号等，选择messagequeue
+     * @param msg 消息
+     */
+    @Deprecated
+    public void sendOnewayOrderly(String topic, String tag, String keys, Integer puId, String msg) {
+
+        Message sendMsg = null;
+
+        try {
+            validateSendMsg(topic, tag, msg);
+            sendMsg = new Message(topic, tag == null ? null : tag,
+                    StringUtils.isEmpty(keys) ? null : keys, msg.getBytes());
+            // 默认3秒超时
+            defaultMQProducer.sendOneway(sendMsg, new MessageQueueSelector() {
+                @Override
+                public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
+                    Integer id = (Integer) arg;
+                    int index = id % mqs.size();
+                    return mqs.get(index);
+                }
+            }, puId);
+        } catch (Exception e) {
+            logger.error(String.format("sendOnewayOrderly消息发送失败,Message:%s", sendMsg.toString()), e);
         }
     }
 

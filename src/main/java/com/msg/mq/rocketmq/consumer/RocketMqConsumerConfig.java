@@ -11,7 +11,7 @@ import com.msg.mq.common.annotation.SubscribeService;
 import com.msg.mq.rocketmq.constants.RocketMqConnectConstant;
 import com.msg.mq.rocketmq.constants.RocketMqErrorEnum;
 import com.msg.mq.rocketmq.exception.RocketMqException;
-import com.msg.mq.rocketmq.listenter.MessageListenerProcessor;
+import com.msg.mq.rocketmq.listenter.MessageListenerConcurrentProcessor;
 import com.msg.mq.rocketmq.utils.ClassHelper;
 import com.msg.mq.rocketmq.utils.RocketMqSystemEnv;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +38,7 @@ public class RocketMqConsumerConfig {
 	private static final Logger logger = Logger.getLogger(RocketMqConsumerConfig.class);
     
     @Autowired
-    private MessageListenerProcessor mqMessageListenerProcessor;
+    private MessageListenerConcurrentProcessor mqMessageListenerProcessor;
     
     //所有主题和标记
   	public Map<String, Set<String>> topicTagsMaps = new ConcurrentHashMap<String, Set<String>>();

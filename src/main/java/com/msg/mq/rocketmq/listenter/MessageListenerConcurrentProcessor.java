@@ -28,18 +28,17 @@ import com.msg.mq.rocketmq.constants.RocketMqErrorEnum;
 import com.msg.mq.rocketmq.consumer.client.IRocketMqMessageProcessor;
 
 /**
- * 消费者监听消费路由
- * 
+ * 并发消费路由
  * @Author wanshuang
  * @Email wanshuang@scqcp.com
  * @Date 2019年03月05日
  * @Version V1.0
  */
 @Component
-public class MessageListenerProcessor implements MessageListenerConcurrently {
+public class MessageListenerConcurrentProcessor implements MessageListenerConcurrently {
 
 	private static final Logger logger = Logger
-			.getLogger(MessageListenerProcessor.class);
+			.getLogger(MessageListenerConcurrentProcessor.class);
 
 	@Autowired
 	CousumerServiceListener cousumerServiceListener;
@@ -144,10 +143,12 @@ public class MessageListenerProcessor implements MessageListenerConcurrently {
 							RocketMqErrorEnum.PRODUCER_HANDLE_RESULT_NULL);
 				}
 
-				if (result.isSuccess() && result.isSaveConsumeLog()) {
-					logger.info("消息处理成功：" + JSON.toJSONString(result)
-							+ ",MsgId=" + value.get(0).getMsgId() + ",耗时:"
-							+ (t2 - t1) + "ms");
+				if (result.isSuccess()) {
+					if (result.isSaveConsumeLog()) {
+						logger.info("消息处理成功：" + JSON.toJSONString(result)
+								+ ",MsgId=" + value.get(0).getMsgId() + ",耗时:"
+								+ (t2 - t1) + "ms");
+					}
 				} else {
 					if (result.isSaveConsumeLog()) {
 						logger.info("消息处理失败：" + JSON.toJSONString(result)

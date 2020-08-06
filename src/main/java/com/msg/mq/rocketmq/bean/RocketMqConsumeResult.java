@@ -36,6 +36,18 @@ public class RocketMqConsumeResult implements Serializable {
 	 */
 	private Throwable e;
 
+	public RocketMqConsumeResult() {
+		super();
+	}
+	public RocketMqConsumeResult(boolean isSuccess) {
+		this.isSuccess = isSuccess;
+	}
+
+	public RocketMqConsumeResult(boolean isSuccess, boolean isSaveConsumeLog) {
+		this.isSuccess = isSuccess;
+		this.isSaveConsumeLog = isSaveConsumeLog;
+	}
+
 	public boolean isSuccess() {
 		return isSuccess;
 	}
